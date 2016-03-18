@@ -12,10 +12,6 @@ ipc.config.silent = true;
 exports = module.exports = {};
 
 var serverId = 'socket';
-
-var execute = 'execute';
-var finished = 'action finished';
-
 var connected;
 var callbacks = {};
 
@@ -23,7 +19,7 @@ function connect (callback) {
 	ipc.config.id = Math.random().toPrecision(6).toString();
 	ipc.connectTo(serverId, callback);
 
-	ipc.of[serverId].on(finished,
+	ipc.of[serverId].on('action finished',
 		function(res){
 			callbacks[res.handle](res.err, res);
 			delete callbacks[res.handle];
@@ -44,7 +40,7 @@ exports.Actions = {
 		action.handle = handle;
 
 		callbacks[handle] = callback;
-		ipc.of[serverId].emit(execute, action);
+		ipc.of[serverId].emit('execute', action);
 	}
 };
 

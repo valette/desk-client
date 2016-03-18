@@ -1,0 +1,19 @@
+{
+  "name": "desk-client",
+  "description": "headless client for desk-server",
+  "license" : "CECILL-B",
+  "main": "./index.js",
+  "author": "Sebastien Valette <sebastien.valette@creatis.insa-lyon.fr> (http://www.creatis.insa-lyon.fr/~valette)",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/valette/desk-client.git"
+  },
+  "dependencies": {
+    "node-ipc": ">0.0.0"
+  },
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  }
+}

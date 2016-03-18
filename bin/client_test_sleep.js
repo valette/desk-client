@@ -1,4 +1,8 @@
-var	desk = require(__dirname + '/index.js');
+#!/usr/bin/env node
+
+'use strict';
+
+var	desk = require(__dirname + '/../index.js');
 
 // beware : this code requires a running DESK server instance
 

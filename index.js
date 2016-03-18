@@ -1,13 +1,13 @@
 var	fs           = require('fs'),
 	ipc          = require('node-ipc'),
 	libpath      = require('path'),
-	os           = require('os'),
-	socket       = require(__dirname + '/cl-socket');
+	os           = require('os');
 
 // base directory where all data files are (data, cache, actions, ..)
 var rootDir = libpath.join(os.homedir(), 'desk') + '/';
 
-socket.setSocketRoot(rootDir);
+ipc.config.socketRoot = rootDir;
+ipc.config.silent = true;
 
 exports = module.exports = {};
 

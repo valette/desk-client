@@ -16,6 +16,7 @@ var connected;
 var callbacks = {};
 
 var connectionCallbacks = [];
+var includedFiles = [];
 
 function connect (callback) {
 	if (!ipc.of.socket) {
@@ -23,7 +24,10 @@ function connect (callback) {
 		ipc.connectTo(serverId);
 		ipc.of.socket.on("error", function (msg) {
 			if (connected) return;
-			require('desk-base');
+			var desk = require('desk-base');
+			includedFiles.forEach(function (file) {
+				desk.includeFile(file, 1);
+			});
 		});
 
 		ipc.of.socket.on("connect", function (msg) {
@@ -35,9 +39,14 @@ function connect (callback) {
 				}
 			);
 			connectionCallbacks.forEach(cb => cb());
+			connectionCallbacks.length = 0;
 		});
 	}
 	connectionCallbacks.push(callback);
+}
+
+exports.includeFile = function (file) {
+	includedFiles.push(file);
 }
 
 exports.Actions = {

@@ -16,7 +16,7 @@ var connected;
 var callbacks = {};
 
 var connectionCallbacks = [];
-var includedFiles = [];
+var includes = [];
 
 function connect (callback) {
 	if (!ipc.of.socket) {
@@ -25,8 +25,8 @@ function connect (callback) {
 		ipc.of.socket.on("error", function (msg) {
 			if (connected) return;
 			var desk = require('desk-base');
-			includedFiles.forEach(function (file) {
-				desk.includeFile(file, 1);
+			includes.forEach(function (file) {
+				desk.include(file, 1);
 			});
 		});
 
@@ -45,8 +45,8 @@ function connect (callback) {
 	connectionCallbacks.push(callback);
 }
 
-exports.includeFile = function (file) {
-	includedFiles.push(file);
+exports.include = function (file) {
+	includes.push(file);
 }
 
 exports.Actions = {

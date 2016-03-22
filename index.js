@@ -18,13 +18,19 @@ var callbacks = {};
 function connect (callback) {
 	ipc.config.id = Math.random().toPrecision(6).toString();
 	ipc.connectTo(serverId, callback);
+	ipc.of.socket.on("error", function (msg) {
+		if (connected) return;
+		require('desk-base');
+	});
 
-	ipc.of[serverId].on('action finished',
-		function(res){
-			callbacks[res.handle](res.err, res);
-			delete callbacks[res.handle];
-		}
-	);
+	ipc.of.socket.on("connect", function (msg) {
+		ipc.of[serverId].on('action finished',
+			function(res){
+				callbacks[res.handle](res.err, res);
+				delete callbacks[res.handle];
+			}
+		);
+	});
 };
 
 exports.Actions = {

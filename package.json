@@ -1,7 +1,7 @@
 {
   "name": "desk-client",
   "description": "headless client for desk-server",
-  "license" : "CECILL-B",
+  "license": "CECILL-B",
   "main": "./index.js",
   "author": "Sebastien Valette <sebastien.valette@creatis.insa-lyon.fr> (http://www.creatis.insa-lyon.fr/~valette)",
   "version": "0.6.0",

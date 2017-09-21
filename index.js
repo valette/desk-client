@@ -1,7 +1,8 @@
-var	fs           = require('fs'),
-	ipc          = require('node-ipc'),
-	libpath      = require('path'),
-	os           = require('os');
+var	fs      = require('fs'),
+	ipc     = require('node-ipc'),
+	libpath = require('path'),
+	os      = require('os'),
+	util	= require('util');
 
 // base directory where all data files are (data, cache, actions, ..)
 var rootDir = libpath.join(os.homedir(), 'desk') + '/';
@@ -64,6 +65,8 @@ exports.Actions = {
 		ipc.of[serverId].emit('execute', action);
 	}
 };
+console.log("promisifying...");
+exports.Actions.executeAsync = util.promisify( exports.Actions.execute );
 
 exports.FileSystem = {
 	readFile : function (file, opts, cb , context) {
@@ -75,6 +78,8 @@ exports.FileSystem = {
 		fs.readFile(libpath.join(rootDir, file), opts, cb.bind(context));
 	}
 };
+
+exports.FileSystem.readFileAsync = util.promisify( exports.FileSystem.readFile );
 
 exports.disconnect = function () {
 	ipc.disconnect(serverId);

@@ -65,7 +65,7 @@ exports.Actions = {
 		ipc.of[serverId].emit('execute', action);
 	}
 };
-console.log("promisifying...");
+
 exports.Actions.executeAsync = util.promisify( exports.Actions.execute );
 
 exports.FileSystem = {

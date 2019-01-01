@@ -10,7 +10,7 @@
     "url": "git://github.com/valette/desk-client.git"
   },
   "dependencies": {
-    "desk-base": "1.3.0",
+    "desk-base": "1.5.0",
     "node-ipc": "9.1.1"
   },
   "optionalDependencies": {},

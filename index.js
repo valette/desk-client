@@ -6,7 +6,52 @@ const crypto  = require( 'crypto' ),
       util    = require('util');
 
 // base directory where all data files are (data, cache, actions, ..)
-var rootDir = libpath.join(os.homedir(), 'desk') + '/';
+const rootDir = libpath.join(os.homedir(), 'desk') + '/';
+
+exports = module.exports = {};
+
+exports.FileSystem = {
+	readFile : function (file, opts, cb , context) {
+		if (typeof opts === 'function') {
+			context = cb;
+			cb = opts;
+			opts = {};
+		}
+		fs.readFile( fullPath( file ), opts, cb.bind(context));
+	},
+
+	writeCachedFileAsync : async function ( name, content, cacheRoot ) {
+
+		cacheRoot = cacheRoot || "cache";
+		const shasum = crypto.createHash( 'sha1' );
+		shasum.update( content );
+		const hash = shasum.digest( 'hex' );
+		const dir = fullPath( cacheRoot + "/" + hash[0] + "/" + hash[1] + "/" + hash );
+		const file = dir + "/" + name;
+
+		if ( fs.existsSync( file ) && ( content === ( '' + fs.readFileSync( file ) ) ) ) {
+
+			return file;
+
+		}
+
+		await exports.Actions.execute ( { action : "write_string",
+			file_name : name, data : content, outputDirectory : dir } )
+		return file;
+
+	}
+
+};
+
+exports.FileSystem.readFileAsync = util.promisify( exports.FileSystem.readFile );
+
+if ( process.env.DESK_SINGLE ) {
+
+	exports.Actions = require('desk-base');
+	exports.Actions.executeAsync = exports.Actions.execute;
+	return;
+
+}
 
 class CustomError extends Error {
 
@@ -27,14 +72,13 @@ util.inherits( CustomError, Error );
 ipc.config.socketRoot = rootDir;
 ipc.config.silent = true;
 
-exports = module.exports = {};
 
-var serverId = 'socket';
+const serverId = 'socket';
 var connected;
-var callbacks = {};
+const callbacks = {};
 
-var connectionCallbacks = [];
-var includes = [];
+const connectionCallbacks = [];
+const includes = [];
 
 function connect (callback) {
 	if (!ipc.of.socket) {
@@ -58,7 +102,7 @@ function connect (callback) {
 					cb( null, res );
 				}
 			);
-			connectionCallbacks.forEach(cb => cb());
+			for ( let callback of connectionCallbacks ) callback();
 			connectionCallbacks.length = 0;
 		});
 	}
@@ -86,50 +130,12 @@ exports.Actions = {
 
 exports.Actions.executeAsync = util.promisify( exports.Actions.execute );
 
-exports.FileSystem = {
-	readFile : function (file, opts, cb , context) {
-		if (typeof opts === 'function') {
-			context = cb;
-			cb = opts;
-			opts = {};
-		}
-		fs.readFile( fullPath( file ), opts, cb.bind(context));
-	},
-
-	writeCachedFileAsync : async function ( name, content, cacheRoot ) {
-
-		cacheRoot = cacheRoot || "cache";
-		const shasum = crypto.createHash( 'sha1' );
-		shasum.update( content );
-		const hash = shasum.digest( 'hex' );
-		const dir = fullPath( cacheRoot + "/" + hash[0] + "/" + hash[1] + "/" + hash );
-		const file = dir + "/" + name;
-
-		if ( fs.existsSync( file ) ) {
-
-			if ( content === ( '' + fs.readFileSync( file ) ) ) {
-
-				return file;
-
-			}
-
-		}
-
-		await exports.Actions.executeAsync ( { action : "write_string",
-			file_name : name, data : content, outputDirectory : dir } )
-		return file;
-
-	}
-
-};
-
 function fullPath ( ...dirs ) {
 
 	const dir = libpath.join( ...dirs );
 	return dir.startsWith( '/' ) ? dir : libpath.join( rootDir, dir );
 
 }
-exports.FileSystem.readFileAsync = util.promisify( exports.FileSystem.readFile );
 
 exports.disconnect = function () {
 	ipc.disconnect(serverId);

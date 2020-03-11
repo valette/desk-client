@@ -115,6 +115,13 @@ exports.include = function (file) {
 
 exports.Actions = {
 	execute : function (action, callback) {
+
+		if ( typeof action === "function" ) {
+
+			return action( "no action provided, check your code!");
+
+		}
+
 		if (!connected) {
 			connect(function () {
 				exports.Actions.execute(action, callback);
